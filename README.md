@@ -1,0 +1,2 @@
+# qs
+⚡ Quickstart your projects!
