@@ -7,7 +7,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/gernest/wow"
 	"github.com/gernest/wow/spin"
-	"github.com/jaynagpaul/qs/pkg/git"
+	"github.com/jaynagpaul/qs/pkg/qs"
 	"github.com/urfave/cli"
 )
 
@@ -38,17 +38,13 @@ func init() {
 		// https://github.com/jaynagpaul/qs => https://github.com/jaynagpaul/qs
 		path := ctx.Args().First()
 
-		path, err := git.Clone(path)
+		p, err := qs.Get(path)
 
 		if err != nil {
-			w.PersistWith(spin.Spinner{Frames: []string{""}}, "")
 			return err
 		}
 
-		w.PersistWith(spin.Spinner{Frames: []string{"👍"}}, " Downloaded!")
-
-		//qs.Run()
-		return nil
+		return qs.Run(p)
 	}
 
 	App.Commands = []cli.Command{

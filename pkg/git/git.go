@@ -11,18 +11,23 @@ import (
 	"github.com/jaynagpaul/qs/pkg/config"
 )
 
-func gitRun(args ...string) (string, error) {
-	b, err := exec.Command("git", args...).CombinedOutput()
+func gitRun(path string, args ...string) (string, error) {
+	cmd := exec.Command("git", args...)
+
+	if path != "" {
+		cmd.Dir = path
+	}
+	b, err := cmd.CombinedOutput()
 	return string(b), err
 }
 
-// Clone the repo to the cache location.
+// Clone the repo to the pkg location.
 // Will automatically format username/repo to git repo URL
 // If repo is already there, it will only pull.
-// Returns the cacheDir and any error that occured
+// Returns the pkgDir and any error that occured
 func Clone(path string) (string, error) {
 	match, err := regexp.MatchString("[^\n]+/[^\n]+", path)
-	var cacheDir string
+	var pkgDir string
 
 	// Not a github path
 	if err != nil || !match {
@@ -40,43 +45,45 @@ func Clone(path string) (string, error) {
 			// and https://github.com/jaynagpaul/qs-license
 			p := u.Path
 			p = p[1:] // Remove first / in path
-			cacheDir = p
+			pkgDir = p
 		} else {
 			path = u.String()
-			cacheDir = path
+			pkgDir = path
 		}
 	} else {
-		cacheDir = path
+		pkgDir = path
 		path = "https://github.com/" + path
 	}
 
+	p := filepath.Join(config.PkgDir, pkgDir)
+
 	// Repo exists only pull
-	if _, err := os.Stat(filepath.Join(config.CacheDir, cacheDir)); err == nil {
+	if _, err := os.Stat(filepath.Join(config.PkgDir, pkgDir)); err == nil {
 		// Overwrite changes
-		o, err := gitRun("fetch", "--all")
+		o, err := gitRun(p, "fetch", "--all")
 		if err != nil {
 			return "", fmt.Errorf("While pulling: %s\n%s", o, err)
 		}
 
-		o, err = gitRun("reset", "--hard", "origin/master")
+		o, err = gitRun(p, "reset", "--hard", "origin/master")
 		if err != nil {
 			return "", fmt.Errorf("While pulling: %s\n%s", o, err)
 		}
 
-		o, err = gitRun("pull", "origin", "master")
+		o, err = gitRun(p, "pull", "origin", "master")
 		if err != nil {
 			return "", fmt.Errorf("While pulling: %s\n%s", o, err)
 		}
 
-		return cacheDir, nil
+		return pkgDir, nil
 	}
 
 	// clone to repo in cache
-	o, err := gitRun("clone", path, filepath.Join(config.CacheDir, cacheDir))
+	o, err := gitRun(p, "clone", path)
 
 	if err != nil {
 		return "", fmt.Errorf("While cloning: %s\n%s", o, err)
 	}
 
-	return cacheDir, nil
+	return pkgDir, nil
 }

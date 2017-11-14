@@ -3,14 +3,19 @@
 # Refer to https://github.com/jaynagpaul/qs/wiki/quickstart.toml
 # for detailed Gopkg.toml documentation.
 
-imports = ["jaynagpaul/license"] # Imported QS files
-
-
-commands = ["create-react-app"]
-
+name = "QS - Quickstart Any Application"
 
 [[template]]
-folder = "./quickstart" # This cannot be used as a template item
-name = "DefaultName"    # This cannot be used as a template item
-PossibleText = ["option1", "option2", "option3"]
+TemplateFolder = "./quickstart" # This is not asked to the user.
+TemplateName = "DefaultName"    # This is not asked to the user.
+
+# Imported QS files. Run in order, and after executing templates.
+# Template variables may be used.
+imports = ["jaynagpaul/license"] # This is not asked to the user.
+
+commands = ["create-react-app"] # Run last. This is not asked to the user.
+
+PossibleOption = ["option1", "option2", "option3"]
+DefaultText = "Default"
+DefaultNum = 1
 

@@ -12,7 +12,7 @@ var listCMD = cli.Command{
 	Name:        "list",
 	Aliases:     []string{"ls", "l"},
 	Usage:       "List all currently downloaded templates.",
-	Description: "Checks the cache dir for all downloaded templates.",
+	Description: "Checks the pkg dir for all downloaded templates.",
 	UsageText: fmt.Sprintf("%s",
 		color.CyanString("qs list"),
 	),

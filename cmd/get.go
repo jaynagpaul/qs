@@ -2,12 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/fatih/color"
-	"github.com/gernest/wow"
-	"github.com/gernest/wow/spin"
-	"github.com/jaynagpaul/qs/pkg/git"
+	"github.com/jaynagpaul/qs/pkg/qs"
 	"github.com/urfave/cli"
 )
 
@@ -30,17 +27,8 @@ var getCMD = cli.Command{
 
 		path := ctx.Args().First()
 
-		w := wow.New(os.Stdout, spin.Get(spin.Dots), " Downloading")
-		w.Start()
+		_, err := qs.Get(path)
 
-		_, err := git.Clone(path)
-
-		if err != nil {
-			w.PersistWith(spin.Spinner{Frames: []string{""}}, "")
-			return err
-		}
-
-		w.PersistWith(spin.Spinner{Frames: []string{"👍"}}, " Downloaded!")
-		return nil
+		return err
 	},
 }
