@@ -2,11 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/fatih/color"
-	"github.com/gernest/wow"
-	"github.com/gernest/wow/spin"
 	"github.com/jaynagpaul/qs/pkg/qs"
 	"github.com/urfave/cli"
 )
@@ -28,9 +25,6 @@ func init() {
 		if !ctx.Args().Present() {
 			return cli.NewExitError("No path passed", 1)
 		}
-
-		w := wow.New(os.Stdout, spin.Get(spin.Dots), " Downloading")
-		w.Start()
 
 		// path to git repo
 		// two options:

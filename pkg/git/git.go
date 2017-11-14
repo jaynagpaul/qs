@@ -55,22 +55,22 @@ func Clone(path string) (string, error) {
 		path = "https://github.com/" + path
 	}
 
-	p := filepath.Join(config.PkgDir, pkgDir)
+	pkgDir = filepath.Join(config.PkgDir, pkgDir)
 
 	// Repo exists only pull
-	if _, err := os.Stat(filepath.Join(config.PkgDir, pkgDir)); err == nil {
+	if _, err := os.Stat(pkgDir); err == nil {
 		// Overwrite changes
-		o, err := gitRun(p, "fetch", "--all")
+		o, err := gitRun(pkgDir, "fetch", "--all")
 		if err != nil {
 			return "", fmt.Errorf("While pulling: %s\n%s", o, err)
 		}
 
-		o, err = gitRun(p, "reset", "--hard", "origin/master")
+		o, err = gitRun(pkgDir, "reset", "--hard", "origin/master")
 		if err != nil {
 			return "", fmt.Errorf("While pulling: %s\n%s", o, err)
 		}
 
-		o, err = gitRun(p, "pull", "origin", "master")
+		o, err = gitRun(pkgDir, "pull", "origin", "master")
 		if err != nil {
 			return "", fmt.Errorf("While pulling: %s\n%s", o, err)
 		}
@@ -79,7 +79,7 @@ func Clone(path string) (string, error) {
 	}
 
 	// clone to repo in cache
-	o, err := gitRun(p, "clone", path)
+	o, err := gitRun(pkgDir, "clone", path)
 
 	if err != nil {
 		return "", fmt.Errorf("While cloning: %s\n%s", o, err)

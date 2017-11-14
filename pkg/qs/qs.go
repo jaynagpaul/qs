@@ -9,11 +9,11 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/BurntSushi/toml"
 	"github.com/fatih/color"
 	"github.com/gernest/wow"
 	"github.com/gernest/wow/spin"
 	"github.com/jaynagpaul/qs/pkg/git"
-	"github.com/pelletier/go-toml"
 	"gopkg.in/AlecAivazis/survey.v1"
 )
 
@@ -58,18 +58,23 @@ func Run(path string) error {
 		color.Magenta("No template to run!")
 		return nil
 	}
+
 	tmpls := make([]string, 0, len(c.Templates))
 	for _, t := range c.Templates {
 		tmpls = append(tmpls, t.Name())
 	}
 
-	var tmpl string
-	// Select Template
-	survey.AskOne(&survey.Select{
-		Message: "Choose a template",
-		Options: tmpls,
-		Default: tmpls[0],
-	}, &tmpl, survey.Required)
+	var tmplName string
+	if len(tmpls) > 1 {
+		// Select Template
+		survey.AskOne(&survey.Select{
+			Message: "Choose a template",
+			Options: tmpls,
+			Default: tmpls[0],
+		}, &tmplName, survey.Required)
+	} else {
+		tmplName = tmpls[0]
+	}
 
 	// Run all imports
 	// TODO, maybe check for cyclic imports
