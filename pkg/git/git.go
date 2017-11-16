@@ -62,24 +62,27 @@ func Clone(path string) (string, error) {
 		// Overwrite changes
 		o, err := gitRun(pkgDir, "fetch", "--all")
 		if err != nil {
+			os.RemoveAll(pkgDir)
 			return "", fmt.Errorf("While pulling: %s\n%s", o, err)
 		}
 
 		o, err = gitRun(pkgDir, "reset", "--hard", "origin/master")
 		if err != nil {
+			os.RemoveAll(pkgDir)
 			return "", fmt.Errorf("While pulling: %s\n%s", o, err)
 		}
 
 		o, err = gitRun(pkgDir, "pull", "origin", "master")
 		if err != nil {
+			os.RemoveAll(pkgDir)
 			return "", fmt.Errorf("While pulling: %s\n%s", o, err)
 		}
 
 		return pkgDir, nil
 	}
-
+	os.MkdirAll(pkgDir, 0777)
 	// clone to repo in cache
-	o, err := gitRun(pkgDir, "clone", path)
+	o, err := gitRun(filepath.Dir(pkgDir), "clone", path)
 
 	if err != nil {
 		return "", fmt.Errorf("While cloning: %s\n%s", o, err)

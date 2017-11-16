@@ -32,12 +32,29 @@ var qsTemplate = []byte(`# quickstart.toml example
 #
 # Refer to https://github.com/jaynagpaul/qs/wiki/quickstart.toml
 # for detailed Gopkg.toml documentation.
+# Order of Operations
+#   1. imports
+#   2. ask all options
+#   3. commands
+#   4. run templates
 
-imports = ["jaynagpaul/license"] # Imported QS files
+	
+name = "QS - Quickstart Any Application"
 
 [[template]]
-folder			= "./quickstart" # This cannot be used as a template item
-Name			= "NameOfTemplate"	# This cannot be used as a template item
-PossibleText 	= ["option1", "option2", "option3"]
-Text = "Default"
+TemplateFolder = "./quickstart" # This is not asked to the user. Default: .
+TemplateName = "DefaultName"    # This is not asked to the user. Default: top level name
+
+# Imported QS files. Run in order, and after executing templates.
+# Template variables may be used.
+imports = ["jaynagpaul/license"] # This is not asked to the user.
+
+# Run first. This is not asked to the user.
+# You can use template variables here
+commands = ["create-react-app"] 
+
+PossibleOption = ["option1", "option2", "option3"]
+DefaultText = "Default"
+DefaultNum = 1
+
 `)

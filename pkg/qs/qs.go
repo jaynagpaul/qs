@@ -59,40 +59,42 @@ func Run(path string) error {
 		return nil
 	}
 
-	tmpls := make([]string, 0, len(c.Templates))
+	// Choose a template
+	tmpls := map[string]Template{}
+	tmplsArray := []string{}
 	for _, t := range c.Templates {
-		tmpls = append(tmpls, t.Name())
+		tmpls[t.Name()] = t
+		tmplsArray = append(tmplsArray, t.Name())
 	}
 
 	var tmplName string
-	if len(tmpls) > 1 {
+	if len(tmplsArray) > 1 {
 		// Select Template
 		survey.AskOne(&survey.Select{
 			Message: "Choose a template",
-			Options: tmpls,
-			Default: tmpls[0],
+			Options: tmplsArray,
+			Default: tmplsArray[0],
 		}, &tmplName, survey.Required)
 	} else {
-		tmplName = tmpls[0]
+		tmplName = tmplsArray[0]
 	}
 
+	tmpl := tmpls[tmplName]
+
 	// Run all imports
-	// TODO, maybe check for cyclic imports
-	for _, imp := range c.Imports {
-		if p, err := Get(imp); err == nil {
-			if err := Run(p); err != nil {
-				return err
-			}
-		} else {
-			return err
-		}
-	}
+	err = execImports(c.Imports)
 
 	if err != nil {
 		return err
 	}
 
-	// Run at end
+	err = execTemplate(tmpl, c.Name)
+
+	if err != nil {
+		return err
+	}
+
+	// Run before template
 	// TODO execute templates
 	for _, cmd := range c.Commands {
 		fmt.Printf("Running %s", color.HiBlueString(cmd))
